@@ -1,6 +1,8 @@
 package main
 
-import "github.com/go-tips/design-pattern/adapter/internal"
+import (
+	"fmt"
+)
 
 // interfaceAを満たしていないclassAを、interfaceが求められているケースで使用する際に、
 // classAを改修せずに、interfaceAを満たすように実装したclassBを作成する。
@@ -8,10 +10,39 @@ import "github.com/go-tips/design-pattern/adapter/internal"
 // classBにはclassAを委譲する。(継承するパターンもあるがGoではできない)
 // 要はラッパークラスのようなもの。
 
+// Loader を満たすように実装したCacheAdapter
+type CacheAdapter struct {
+	*Cache
+}
+
+func (c *CacheAdapter) Load() {
+	c.Cache.Get()
+}
+
+func (c *CacheAdapter) Store(v any) {
+	c.Cache.Set(v)
+}
+
+// CacheはLoaderを実装していない
+type Cache struct{}
+
+func (c *Cache) Set(v any) {
+	fmt.Println("Set", v)
+}
+
+func (c *Cache) Get() {
+	fmt.Println("Get")
+}
+
+type Loader interface {
+	Load()
+	Store(v any)
+}
+
 func main() {
-	var loader internal.Loader
+	var loader Loader
 	// loader = &Cache{} // これはコンパイルエラーになる
-	loader = &internal.CacheAdapter{&internal.Cache{}} // 今回のケースだとCacheはnilでも問題ないが、一応&Cache{}を渡している
-	loader.Load()                                      // Get
-	loader.Store("hoge")                               // Set hoge
+	loader = &CacheAdapter{&Cache{}} // 今回のケースだとCacheはnilでも問題ないが、一応&Cache{}を渡している
+	loader.Load()                    // Get
+	loader.Store("hoge")             // Set hoge
 }
