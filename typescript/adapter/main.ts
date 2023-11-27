@@ -1,4 +1,4 @@
-interface Validtor {
+interface Validator {
     valid(value: String): Boolean;
 }
 
@@ -13,6 +13,7 @@ class CustomRegExp {
     };
 }
 
+// CustomRegExp は Validator を満たさないので、橋渡しになる Class を定義する
 class ValidatorAdapter {
     valid(value: String): Boolean {
         const customRegExp = new CustomRegExp(value);
@@ -20,6 +21,6 @@ class ValidatorAdapter {
     };
 }
 
-const validator: Validtor = new ValidatorAdapter();
+const validator: Validator = new ValidatorAdapter();
 console.log(validator.valid('SSS'));
 console.log(validator.valid('ASS'));
