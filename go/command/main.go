@@ -1,5 +1,7 @@
 package main
 
+import "slices"
+
 type Command interface {
 	Execute() error
 }
@@ -80,8 +82,9 @@ func (n *Notify) Invoke() error {
 
 func main() {
 	notify := &Notify{}
-	notify.commands = append(
+	notify.commands = slices.Insert[[]Command, Command](
 		notify.commands,
+		0,
 		&SendEmail{receiver: &SesClient{from: "example.com"}},
 		&SendPushNotification{receiver: &Pinpoint{}},
 	)
